@@ -1,0 +1,16 @@
+services:
+  postgres-db:
+    image: postgres:16-bookworm
+    container_name: taskflow-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=taskflow
+      - TZ=America/Buenos_Aires
+    ports:
+      - "5432:5432"
+    volumes:
+      - taskflow-db-data:/var/lib/postgresql/data
+
+volumes:
+  taskflow-db-data:

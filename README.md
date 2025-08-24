@@ -7,7 +7,8 @@ API RESTful para la gestión de proyectos y tareas, construida con Spring Boot. 
 * **Lenguaje:** Java 17
 * **Framework:** Spring Boot 3
 * **Persistencia:** Spring Data JPA / Hibernate
-* **Base de Datos:** PostgreSQL (gestionada con Docker)
+* **Base de Datos:** PostgreSQL
+* **Orquestación de Contenedores:** Docker Compose
 * **Gestión de Dependencias:** Maven
 * **Pruebas de API:** Postman
 
@@ -25,24 +26,33 @@ Actualmente, la API expone los siguientes endpoints para la gestión de Tareas:
 
 ## Cómo Ejecutar el Proyecto Localmente
 
-Para levantar el proyecto en un entorno local, sigue estos pasos:
+El entorno de desarrollo está completamente gestionado por Docker Compose, simplificando el proceso de arranque.
 
-1.  **Clonar el repositorio:**
+1.  **Requisitos Previos:**
+    * Tener Docker y Docker Compose instalados.
+    * Tener Java 17 (o superior) y Maven instalados.
+
+2.  **Clonar el repositorio:**
     ```bash
     git clone [https://github.com/JuancaSterba/taskflow-api.git](https://github.com/JuancaSterba/taskflow-api.git)
     cd taskflow-api
     ```
 
-2.  **Levantar la base de datos con Docker:**
-    Asegúrate de tener Docker Desktop instalado y corriendo.
+3.  **Levantar el entorno con Docker Compose:**
+    Este comando iniciará la base de datos PostgreSQL en segundo plano.
     ```bash
-    docker run --name taskflow-db -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=taskflow -e TZ="America/Buenos_Aires" -p 5432:5432 -d postgres:16-bookworm
+    docker-compose up -d
     ```
 
-3.  **Ejecutar la aplicación Spring Boot:**
+4.  **Ejecutar la aplicación Spring Boot:**
     Puedes ejecutar la aplicación directamente desde tu IDE (IntelliJ IDEA) o usando Maven en la terminal:
     ```bash
     ./mvnw spring-boot:run
     ```
 
 La API estará disponible en `http://localhost:8080`.
+
+## Gestión del Entorno
+
+* **Para detener el entorno:** `docker-compose down`
+* **Para ver los logs de la base de datos:** `docker-compose logs -f postgres-db`
