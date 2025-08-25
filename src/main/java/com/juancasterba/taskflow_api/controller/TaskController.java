@@ -2,6 +2,7 @@ package com.juancasterba.taskflow_api.controller;
 
 import com.juancasterba.taskflow_api.model.Task;
 import com.juancasterba.taskflow_api.service.TaskService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task){
+    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task){
         Task createdTask = taskService.createTask(task);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
@@ -34,7 +35,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task taskDetails){
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @Valid @RequestBody Task taskDetails){
         Task updatedTask = taskService.updateTask(id, taskDetails);
         return new ResponseEntity<>(updatedTask, HttpStatus.OK);
     }
