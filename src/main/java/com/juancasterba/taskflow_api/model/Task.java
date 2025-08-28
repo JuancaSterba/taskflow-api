@@ -29,4 +29,8 @@ public class Task {
 
     private boolean completed;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
 }
