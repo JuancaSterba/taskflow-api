@@ -1,17 +1,18 @@
 package com.juancasterba.taskflow_api.service;
 
+import com.juancasterba.taskflow_api.dto.CreateTaskRequestDTO;
+import com.juancasterba.taskflow_api.dto.TaskResponseDTO;
 import com.juancasterba.taskflow_api.exception.ResourceNotFoundException;
-import com.juancasterba.taskflow_api.model.Task;
 
 import java.util.List;
 
 public interface TaskService {
 
-    Task createTask(Task task);
-    List<Task> getAllTasks();
-    Task getTaskById (Long id) throws ResourceNotFoundException;
-    Task updateTask (Long id, Task taskDetails) throws ResourceNotFoundException;
+    TaskResponseDTO createTask(CreateTaskRequestDTO taskDTO);
+    List<TaskResponseDTO> getAllTasks();
+    TaskResponseDTO getTaskById (Long id) throws ResourceNotFoundException;
+    TaskResponseDTO updateTask (Long id, CreateTaskRequestDTO taskDTO) throws ResourceNotFoundException;
     void deleteById (Long id) throws ResourceNotFoundException;
-    Task createTaskForProject (Long projectId, Task task);
+    TaskResponseDTO createTaskForProject (Long projectId, CreateTaskRequestDTO taskDTO);
 
 }

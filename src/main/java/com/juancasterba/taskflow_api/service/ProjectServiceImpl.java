@@ -1,6 +1,9 @@
 package com.juancasterba.taskflow_api.service;
 
+import com.juancasterba.taskflow_api.dto.CreateProjectRequestDTO;
+import com.juancasterba.taskflow_api.dto.ProjectResponseDTO;
 import com.juancasterba.taskflow_api.exception.ResourceNotFoundException;
+import com.juancasterba.taskflow_api.mapper.ProjectMapper;
 import com.juancasterba.taskflow_api.model.Project;
 import com.juancasterba.taskflow_api.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,30 +18,31 @@ public class ProjectServiceImpl implements ProjectService{
     private final ProjectRepository projectRepository;
 
     @Override
-    public Project createProject(Project project) {
-        return projectRepository.save(project);
+    public ProjectResponseDTO createProject(CreateProjectRequestDTO projectDTO) {
+        Project project = ProjectMapper.toProjectEntity(projectDTO);
+        return ProjectMapper.toProjectDTO(projectRepository.save(project));
     }
 
     @Override
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    public List<ProjectResponseDTO> getAllProjects() {
+        return projectRepository.findAll().stream().map(ProjectMapper::toProjectDTO).toList();
     }
 
     @Override
-    public Project getProjectById(Long id) throws ResourceNotFoundException {
-        return projectRepository.findById(id).orElseThrow(
-                ()->new ResourceNotFoundException("No project found")
+    public ProjectResponseDTO getProjectById(Long id) throws ResourceNotFoundException {
+        return ProjectMapper.toProjectDTO(projectRepository.findById(id).orElseThrow(
+                ()->new ResourceNotFoundException("No project found"))
         );
     }
 
     @Override
-    public Project updateProject(Long id, Project projectDetails) throws ResourceNotFoundException {
+    public ProjectResponseDTO updateProject(Long id, CreateProjectRequestDTO projectDTO) throws ResourceNotFoundException {
         Project project=projectRepository.findById(id).orElseThrow(
                 ()-> new ResourceNotFoundException("No project found")
         );
-        project.setName(projectDetails.getName());
-        project.setDescription(projectDetails.getDescription());
-        return projectRepository.save(project);
+        project.setName(projectDTO.getName());
+        project.setDescription(projectDTO.getDescription());
+        return ProjectMapper.toProjectDTO(projectRepository.save(project));
     }
 
     @Override

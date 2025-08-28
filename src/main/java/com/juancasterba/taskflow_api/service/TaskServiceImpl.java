@@ -1,6 +1,9 @@
 package com.juancasterba.taskflow_api.service;
 
+import com.juancasterba.taskflow_api.dto.CreateTaskRequestDTO;
+import com.juancasterba.taskflow_api.dto.TaskResponseDTO;
 import com.juancasterba.taskflow_api.exception.ResourceNotFoundException;
+import com.juancasterba.taskflow_api.mapper.ProjectMapper;
 import com.juancasterba.taskflow_api.model.Project;
 import com.juancasterba.taskflow_api.model.Task;
 import com.juancasterba.taskflow_api.repository.ProjectRepository;
@@ -18,31 +21,32 @@ public class TaskServiceImpl implements TaskService{
     private final ProjectRepository projectRepository;
 
     @Override
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
+    public TaskResponseDTO createTask(CreateTaskRequestDTO taskDTO) {
+        Task task = ProjectMapper.toTaskEntity(taskDTO);
+        return ProjectMapper.toTaskDTO(taskRepository.save(task));
     }
 
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponseDTO> getAllTasks() {
+        return taskRepository.findAll().stream().map(ProjectMapper::toTaskDTO).toList();
     }
 
     @Override
-    public Task getTaskById(Long id) throws ResourceNotFoundException {
-        return taskRepository.findById(id).orElseThrow(
-                ()->new ResourceNotFoundException("No task found")
+    public TaskResponseDTO getTaskById(Long id) throws ResourceNotFoundException {
+        return ProjectMapper.toTaskDTO(taskRepository.findById(id).orElseThrow(
+                ()->new ResourceNotFoundException("No task found"))
         );
     }
 
     @Override
-    public Task updateTask(Long id, Task taskDetails) throws ResourceNotFoundException {
+    public TaskResponseDTO updateTask(Long id, CreateTaskRequestDTO taskDTO) throws ResourceNotFoundException {
         Task task = taskRepository.findById(id).orElseThrow(
                 ()-> new ResourceNotFoundException("No task found")
         );
-        task.setTitle(taskDetails.getTitle());
-        task.setDescription(taskDetails.getDescription());
-        task.setCompleted(taskDetails.isCompleted());
-        return taskRepository.save(task);
+        task.setTitle(taskDTO.getTitle());
+        task.setDescription(taskDTO.getDescription());
+        task.setCompleted(taskDTO.isCompleted());
+        return ProjectMapper.toTaskDTO(taskRepository.save(task));
     }
 
     @Override
@@ -54,11 +58,12 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public Task createTaskForProject(Long projectId, Task task) {
+    public TaskResponseDTO createTaskForProject(Long projectId, CreateTaskRequestDTO taskDTO) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(()->new ResourceNotFoundException("No project found with id" + projectId));
+        Task task = ProjectMapper.toTaskEntity(taskDTO);
         task.setProject(project);
-        return taskRepository.save(task);
+        return ProjectMapper.toTaskDTO(taskRepository.save(task));
     }
 
 }

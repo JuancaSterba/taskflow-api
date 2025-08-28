@@ -1,7 +1,9 @@
 package com.juancasterba.taskflow_api.controller;
 
-import com.juancasterba.taskflow_api.model.Project;
-import com.juancasterba.taskflow_api.model.Task;
+import com.juancasterba.taskflow_api.dto.CreateProjectRequestDTO;
+import com.juancasterba.taskflow_api.dto.CreateTaskRequestDTO;
+import com.juancasterba.taskflow_api.dto.ProjectResponseDTO;
+import com.juancasterba.taskflow_api.dto.TaskResponseDTO;
 import com.juancasterba.taskflow_api.service.ProjectService;
 import com.juancasterba.taskflow_api.service.TaskService;
 import jakarta.validation.Valid;
@@ -21,24 +23,24 @@ public class ProjectController {
     private final TaskService taskService;
 
     @GetMapping
-    public List<Project> getAllProjects(){
+    public List<ProjectResponseDTO> getAllProjects(){
         return projectService.getAllProjects();
     }
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@Valid @RequestBody Project project){
-        Project createdProject = projectService.createProject(project);
+    public ResponseEntity<ProjectResponseDTO> createProject(@Valid @RequestBody CreateProjectRequestDTO projectDTO){
+        ProjectResponseDTO createdProject = projectService.createProject(projectDTO);
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id){
+    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id){
         return new ResponseEntity<>(projectService.getProjectById(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project projectDetails){
-        Project updatedProject = projectService.updateProject(id, projectDetails);
+    public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id, @Valid @RequestBody CreateProjectRequestDTO projectDTO){
+        ProjectResponseDTO updatedProject = projectService.updateProject(id, projectDTO);
         return new ResponseEntity<>(updatedProject, HttpStatus.OK);
     }
 
@@ -49,8 +51,8 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/tasks")
-    public ResponseEntity<Task> createTaskForProject(@PathVariable Long projectId, @Valid @RequestBody Task task){
-        Task createdTask = taskService.createTaskForProject(projectId, task);
+    public ResponseEntity<TaskResponseDTO> createTaskForProject(@PathVariable Long projectId, @Valid @RequestBody CreateTaskRequestDTO taskDTO){
+        TaskResponseDTO createdTask = taskService.createTaskForProject(projectId, taskDTO);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
