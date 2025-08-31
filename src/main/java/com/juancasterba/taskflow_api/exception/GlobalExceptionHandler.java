@@ -1,5 +1,6 @@
 package com.juancasterba.taskflow_api.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,6 +36,22 @@ public class GlobalExceptionHandler {
         body.put("errors", errors);
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String userFriendlyMessage = "Error de datos: Es posible que el nombre de usuario o el email ya existan.";
+
+        // Lógica opcional para un mensaje más específico
+        // Esto depende del nombre de la restricción en tu base de datos
+        String rootErrorMessage = ex.getMostSpecificCause().getMessage();
+        if (rootErrorMessage.contains("users_username_key") || rootErrorMessage.contains("uk_username")) { // El nombre puede variar
+            userFriendlyMessage = "El nombre de usuario ya está en uso.";
+        } else if (rootErrorMessage.contains("users_email_key") || rootErrorMessage.contains("uk_email")) { // El nombre puede variar
+            userFriendlyMessage = "La dirección de email ya está registrada.";
+        }
+
+        return createErrorResponse(HttpStatus.CONFLICT, userFriendlyMessage); // <-- Usamos 409 CONFLICT
     }
 
     private ResponseEntity<Map<String, String>> createErrorResponse(HttpStatus status, String errorMessage) {
