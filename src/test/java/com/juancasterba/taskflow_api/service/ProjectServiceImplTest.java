@@ -13,6 +13,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
@@ -79,37 +83,42 @@ class ProjectServiceImplTest {
 
     @Test
     @DisplayName("Test para listar todos los proyectos")
-    void givenProjectsList_whenGetAllProjects_thenReturnProjectResponseDTOList() {
+    void givenProjectsList_whenGetAllProjects_thenReturnProjectResponseDTOPage() {
         // Given
         Project anotherProject = new Project();
         anotherProject.setId(2L);
         anotherProject.setName("Otro Proyecto");
         anotherProject.setDescription("Otra descripción");
 
-        given(projectRepository.findAll()).willReturn(List.of(project, anotherProject));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Project> projectPage = new PageImpl<>(List.of(project, anotherProject), pageable, 2);
+
+        given(projectRepository.findAll(any(Pageable.class))).willReturn(projectPage);
 
         // When
-        List<ProjectResponseDTO> projectList = projectService.getAllProjects();
+        Page<ProjectResponseDTO> resultPage = projectService.getAllProjects(pageable);
 
         // Then
-        assertThat(projectList).isNotNull();
-        assertThat(projectList.size()).isEqualTo(2);
-        assertThat(projectList.get(0).getName()).isEqualTo("Proyecto de Prueba");
-        assertThat(projectList.get(1).getName()).isEqualTo("Otro Proyecto");
+        assertThat(resultPage).isNotNull();
+        assertThat(resultPage.getTotalElements()).isEqualTo(2);
+        assertThat(resultPage.getContent()).hasSize(2)
+                .extracting(ProjectResponseDTO::getName)
+                .containsExactly("Proyecto de Prueba", "Otro Proyecto");
     }
 
     @Test
     @DisplayName("Test para listar proyectos cuando no hay ninguno")
-    void givenEmptyProjectsList_whenGetAllProjects_thenReturnEmptyList() {
+    void givenEmptyProjectsList_whenGetAllProjects_thenReturnEmptyPage() {
         // Given
-        given(projectRepository.findAll()).willReturn(Collections.emptyList());
+        Pageable pageable = PageRequest.of(0, 10);
+        given(projectRepository.findAll(any(Pageable.class))).willReturn(Page.empty(pageable));
 
         // When
-        List<ProjectResponseDTO> projectList = projectService.getAllProjects();
+        Page<ProjectResponseDTO> projectPage = projectService.getAllProjects(pageable);
 
         // Then
-        assertThat(projectList).isNotNull();
-        assertThat(projectList).isEmpty();
+        assertThat(projectPage).isNotNull();
+        assertThat(projectPage).isEmpty();
     }
 
     @Test
