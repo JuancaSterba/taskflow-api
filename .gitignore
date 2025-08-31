@@ -32,5 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-# Application properties for local development
-/src/main/resources/application-dev.properties
+# Secrets and environment-specific configuration
+.env
+application-dev.properties
