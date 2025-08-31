@@ -7,6 +7,8 @@ import com.juancasterba.taskflow_api.mapper.ProjectMapper;
 import com.juancasterba.taskflow_api.model.Project;
 import com.juancasterba.taskflow_api.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +26,9 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public List<ProjectResponseDTO> getAllProjects() {
-        return projectRepository.findAll().stream().map(ProjectMapper::toProjectDTO).toList();
+    public Page<ProjectResponseDTO> getAllProjects(Pageable pageable) {
+        Page<Project> projectPage = projectRepository.findAll(pageable);
+        return projectPage.map(ProjectMapper::toProjectDTO);
     }
 
     @Override

@@ -8,6 +8,8 @@ import com.juancasterba.taskflow_api.service.ProjectService;
 import com.juancasterba.taskflow_api.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +25,9 @@ public class ProjectController {
     private final TaskService taskService;
 
     @GetMapping
-    public List<ProjectResponseDTO> getAllProjects(){
-        return projectService.getAllProjects();
+    public ResponseEntity<Page<ProjectResponseDTO>> getAllProjects(Pageable pageable){
+        Page<ProjectResponseDTO> projectPage = projectService.getAllProjects(pageable);
+        return new ResponseEntity<>(projectPage, HttpStatus.OK);
     }
 
     @PostMapping
