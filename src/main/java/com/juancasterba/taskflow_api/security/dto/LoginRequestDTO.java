@@ -1,0 +1,11 @@
+package com.juancasterba.taskflow_api.security.dto;
+
+import lombok.Data;
+
+@Data
+public class LoginRequestDTO {
+
+    private String username;
+    private String password;
+
+}
