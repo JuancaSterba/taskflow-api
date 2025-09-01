@@ -82,3 +82,10 @@ Este proyecto utiliza archivos de configuración locales tanto para Spring Boot 
 2.  Usa el endpoint `POST /api/v1/auth/login` con las credenciales de ese usuario para obtener un token JWT.
 3.  Copia el token.
 4.  Para cualquier petición a un endpoint protegido (ej: `GET /api/v1/projects`), ve a la pestaña **Authorization** en Postman, selecciona **Bearer Token** y pega el token.
+
+## Documentación de la API (Interactiva)
+
+La documentación completa y detallada de todos los endpoints se genera automáticamente con OpenAPI y puede ser consultada de forma interactiva a través de Swagger UI una vez que la aplicación está corriendo.
+
+* **URL de la UI de Swagger:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+* **Especificación OpenAPI (JSON):** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
