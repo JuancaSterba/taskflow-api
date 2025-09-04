@@ -26,6 +26,7 @@ public class ProjectMapper {
                 .id(project.getId())
                 .name(project.getName())
                 .description(project.getDescription())
+                .ownerUsername(project.getOwner().getUsername())
                 .tasks(project.getTasks().stream().map(ProjectMapper::toTaskDTO).toList())
                 .build();
     }
