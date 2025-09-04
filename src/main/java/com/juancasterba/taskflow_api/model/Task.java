@@ -7,9 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "tasks")
+@SQLRestriction("status = 'ACTIVE'")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -32,5 +34,8 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
 
 }
