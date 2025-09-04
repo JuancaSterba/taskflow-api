@@ -1,5 +1,6 @@
 package com.juancasterba.taskflow_api.model;
 
+import com.juancasterba.taskflow_api.security.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -35,5 +36,9 @@ public class Project {
             orphanRemoval = true
     )
     private List<Task> tasks = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
 }

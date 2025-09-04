@@ -6,9 +6,11 @@ import com.juancasterba.taskflow_api.exception.ResourceNotFoundException;
 import com.juancasterba.taskflow_api.mapper.ProjectMapper;
 import com.juancasterba.taskflow_api.model.Project;
 import com.juancasterba.taskflow_api.repository.ProjectRepository;
+import com.juancasterba.taskflow_api.security.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +23,11 @@ public class ProjectServiceImpl implements ProjectService{
 
     @Override
     public ProjectResponseDTO createProject(CreateProjectRequestDTO projectDTO) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Project project = ProjectMapper.toProjectEntity(projectDTO);
-        return ProjectMapper.toProjectDTO(projectRepository.save(project));
+        project.setOwner(currentUser);
+        Project savedProject = projectRepository.save(project);
+        return ProjectMapper.toProjectDTO(savedProject);
     }
 
     @Override
