@@ -16,4 +16,7 @@ public interface ProjectService {
     ProjectResponseDTO updateProject(Long id, CreateProjectRequestDTO projectDTO) throws ResourceNotFoundException;
     void deleteProject(Long id) throws ResourceNotFoundException;
 
+    // ADMIN only methods
+    void hardDeleteProject(Long id);
+
 }

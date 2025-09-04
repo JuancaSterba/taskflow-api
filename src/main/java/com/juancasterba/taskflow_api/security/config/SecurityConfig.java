@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/ping"
                         ).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

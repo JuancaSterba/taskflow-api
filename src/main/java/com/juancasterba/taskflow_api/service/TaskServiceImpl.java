@@ -63,12 +63,6 @@ public class TaskServiceImpl implements TaskService{
     public TaskResponseDTO createTaskForProject(Long projectId, CreateTaskRequestDTO taskDTO) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(()->new ResourceNotFoundException("No project found with id" + projectId));
-
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!project.getOwner().getUsername().equals(currentUsername)){
-            throw new ResourceNotFoundException("Project not found with id: " + projectId);
-        }
-
         Task task = projectMapper.toTaskEntity(taskDTO);
         task.setProject(project);
         return projectMapper.toTaskDTO(taskRepository.save(task));
