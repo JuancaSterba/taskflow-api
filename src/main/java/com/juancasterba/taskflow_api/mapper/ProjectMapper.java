@@ -6,10 +6,12 @@ import com.juancasterba.taskflow_api.dto.ProjectResponseDTO;
 import com.juancasterba.taskflow_api.dto.TaskResponseDTO;
 import com.juancasterba.taskflow_api.model.Project;
 import com.juancasterba.taskflow_api.model.Task;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProjectMapper {
 
-    public static TaskResponseDTO toTaskDTO(Task task){
+    public TaskResponseDTO toTaskDTO(Task task){
         return TaskResponseDTO.builder()
                 .id(task.getId())
                 .title(task.getTitle())
@@ -18,7 +20,7 @@ public class ProjectMapper {
                 .build();
     }
 
-    public static ProjectResponseDTO toProjectDTO(Project project) {
+    public ProjectResponseDTO toProjectDTO(Project project) {
         if (project == null) {
             return null;
         }
@@ -27,11 +29,11 @@ public class ProjectMapper {
                 .name(project.getName())
                 .description(project.getDescription())
                 .ownerUsername(project.getOwner().getUsername())
-                .tasks(project.getTasks().stream().map(ProjectMapper::toTaskDTO).toList())
+                .tasks(project.getTasks().stream().map(this::toTaskDTO).toList())
                 .build();
     }
 
-    public static Project toProjectEntity(CreateProjectRequestDTO dto){
+    public Project toProjectEntity(CreateProjectRequestDTO dto){
         if (dto == null){
             return null;
         }
@@ -41,7 +43,7 @@ public class ProjectMapper {
         return project;
     }
 
-    public static Task toTaskEntity(CreateTaskRequestDTO dto){
+    public Task toTaskEntity(CreateTaskRequestDTO dto){
         if (dto == null){
             return null;
         }
