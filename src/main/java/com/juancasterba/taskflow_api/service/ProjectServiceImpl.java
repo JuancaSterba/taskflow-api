@@ -11,6 +11,8 @@ import com.juancasterba.taskflow_api.security.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,12 +37,18 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     @Transactional(readOnly = true)
     public Page<ProjectResponseDTO> getAllProjects(Pageable pageable) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        // Necesitaremos un nuevo método en el repositorio
-        Page<Project> projectPage = projectRepository.findByOwner(currentUser, pageable);
-
-        return projectPage.map(ProjectMapper::toProjectDTO);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+        // Verificamos si el usuario actual tiene el rol de ADMIN
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            // Lógica del ADMIN: buscar en todos los proyectos
+            Page<Project> projectPage = projectRepository.findAll(pageable);
+            return projectPage.map(ProjectMapper::toProjectDTO);
+        } else {
+            // Lógica del USER: buscar solo en los proyectos del dueño
+            Page<Project> projectPage = projectRepository.findByOwner(currentUser, pageable);
+            return projectPage.map(ProjectMapper::toProjectDTO);
+        }
     }
 
     @Override
