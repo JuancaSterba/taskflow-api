@@ -8,11 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "projects")
+@SQLRestriction("status = 'ACTIVE'")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -40,5 +43,8 @@ public class Project {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
 
 }

@@ -5,6 +5,7 @@ import com.juancasterba.taskflow_api.dto.ProjectResponseDTO;
 import com.juancasterba.taskflow_api.exception.ResourceNotFoundException;
 import com.juancasterba.taskflow_api.mapper.ProjectMapper;
 import com.juancasterba.taskflow_api.model.Project;
+import com.juancasterba.taskflow_api.model.Status;
 import com.juancasterba.taskflow_api.repository.ProjectRepository;
 import com.juancasterba.taskflow_api.security.model.User;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,34 +33,63 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ProjectResponseDTO> getAllProjects(Pageable pageable) {
-        Page<Project> projectPage = projectRepository.findAll(pageable);
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Necesitaremos un nuevo método en el repositorio
+        Page<Project> projectPage = projectRepository.findByOwner(currentUser, pageable);
+
         return projectPage.map(ProjectMapper::toProjectDTO);
     }
 
     @Override
-    public ProjectResponseDTO getProjectById(Long id) throws ResourceNotFoundException {
-        return ProjectMapper.toProjectDTO(projectRepository.findById(id).orElseThrow(
-                ()->new ResourceNotFoundException("No project found"))
-        );
+    @Transactional(readOnly = true)
+    public ProjectResponseDTO getProjectById(Long id) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
+
+        // Verificación de propiedad
+        if (!project.getOwner().getId().equals(currentUser.getId())) {
+            // Lanzamos 404 para no revelar la existencia de recursos ajenos
+            throw new ResourceNotFoundException("Project not found with id: " + id);
+        }
+
+        return ProjectMapper.toProjectDTO(project);
     }
 
     @Override
-    public ProjectResponseDTO updateProject(Long id, CreateProjectRequestDTO projectDTO) throws ResourceNotFoundException {
-        Project project=projectRepository.findById(id).orElseThrow(
-                ()-> new ResourceNotFoundException("No project found")
-        );
+    public ProjectResponseDTO updateProject(Long id, CreateProjectRequestDTO projectDTO) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
+
+        // Verificación de propiedad
+        if (!project.getOwner().getId().equals(currentUser.getId())) {
+            throw new ResourceNotFoundException("Project not found with id: " + id);
+        }
+
         project.setName(projectDTO.getName());
         project.setDescription(projectDTO.getDescription());
-        return ProjectMapper.toProjectDTO(projectRepository.save(project));
+        Project updatedProject = projectRepository.save(project);
+        return ProjectMapper.toProjectDTO(updatedProject);
     }
 
     @Override
-    public void deleteProject(Long id) throws ResourceNotFoundException {
-        if(!projectRepository.existsById(id)){
-            throw new ResourceNotFoundException("No project found with id: "+id);
+    public void deleteProject(Long id) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
+
+        // Verificación de propiedad
+        if (!project.getOwner().getId().equals(currentUser.getId())) {
+            throw new ResourceNotFoundException("Project not found with id: " + id);
         }
-        projectRepository.deleteById(id);
+
+        // ¡Implementamos el borrado lógico!
+        project.setStatus(Status.ARCHIVED);
+        projectRepository.save(project);
     }
 
 }
