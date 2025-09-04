@@ -4,8 +4,6 @@ import com.juancasterba.taskflow_api.dto.*;
 import com.juancasterba.taskflow_api.service.ProjectService;
 import com.juancasterba.taskflow_api.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,8 +28,8 @@ public class ProjectController {
 
     @GetMapping
     @Operation(
-            summary = "Get all projects",
-            description = "Allows to get a paginated list of all projects."
+            summary = "Get all projects for the current user (or all if ADMIN)",
+            description = "Retrieves a paginated list of projects. If the user is an ADMIN, it returns all projects. Otherwise, it returns only the projects owned by the current user."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -56,7 +54,7 @@ public class ProjectController {
     @PostMapping
     @Operation(
             summary = "Create a new project",
-            description = "Allows to create a new project with the provided data."
+            description = "Allows to create a new project with the provided data. The project will be owned by the current authenticated user."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -86,16 +84,7 @@ public class ProjectController {
     @GetMapping("/{id}")
     @Operation(
             summary = "Get a project by its ID",
-            description = "Allows to get detailed information of a specific project using its ID.",
-            parameters = {
-                    @Parameter(
-                            name = "id",
-                            description = "ID of the project to get.",
-                            required = true,
-                            in = ParameterIn.PATH,
-                            schema = @Schema(type = "integer", format = "int64")
-                    )
-            }
+            description = "Allows to get detailed information of a specific project using its ID. Access is restricted to the project owner."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -113,7 +102,7 @@ public class ProjectController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found. The project with the specified ID does not exist.",
+                    description = "Not found. The project with the specified ID does not exist or you do not have permission to view it.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))
             )
     })
@@ -124,16 +113,7 @@ public class ProjectController {
     @PutMapping("/{id}")
     @Operation(
             summary = "Update a project",
-            description = "Allows to update the information of an existing project using its ID.",
-            parameters = {
-                    @Parameter(
-                            name = "id",
-                            description = "ID of the project to update.",
-                            required = true,
-                            in = ParameterIn.PATH,
-                            schema = @Schema(type = "integer", format = "int64")
-                    )
-            }
+            description = "Allows to update the information of an existing project using its ID. Access is restricted to the project owner."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -156,7 +136,7 @@ public class ProjectController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found. The project with the specified ID does not exist.",
+                    description = "Not found. The project with the specified ID does not exist or you do not have permission to modify it.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))
             )
     })
@@ -167,22 +147,13 @@ public class ProjectController {
 
     @DeleteMapping("/{id}")
     @Operation(
-            summary = "Delete a project by its ID",
-            description = "Allows to permanently delete a project using its ID.",
-            parameters = {
-                    @Parameter(
-                            name = "id",
-                            description = "ID of the project to delete.",
-                            required = true,
-                            in = ParameterIn.PATH,
-                            schema = @Schema(type = "integer", format = "int64")
-                    )
-            }
+            summary = "Archive a project by its ID (Soft Delete)",
+            description = "Allows to archive a project by setting its status to 'ARCHIVED'. This is a soft delete. Access is restricted to the project owner."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "204",
-                    description = "Project deleted successfully."
+                    description = "Project archived successfully."
             ),
             @ApiResponse(
                     responseCode = "401",
@@ -191,7 +162,7 @@ public class ProjectController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found. The project with the specified ID does not exist.",
+                    description = "Not found. The project with the specified ID does not exist or you do not have permission to archive it.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))
             )
     })
@@ -203,16 +174,7 @@ public class ProjectController {
     @PostMapping("/{projectId}/tasks")
     @Operation(
             summary = "Create a task for a project",
-            description = "Allows to create a new task and associate it with an existing project, identified by its ID.",
-            parameters = {
-                    @Parameter(
-                            name = "projectId",
-                            description = "ID of the project to which the task will be associated.",
-                            required = true,
-                            in = ParameterIn.PATH,
-                            schema = @Schema(type = "integer", format = "int64")
-                    )
-            }
+            description = "Allows to create a new task and associate it with an existing project, identified by its ID. Access is restricted to the project owner."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -235,7 +197,7 @@ public class ProjectController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found. The project with the specified ID does not exist.",
+                    description = "Not found. The project with the specified ID does not exist or you do not have permission to add tasks to it.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))
             )
     })

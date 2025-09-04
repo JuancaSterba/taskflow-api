@@ -9,6 +9,7 @@ import com.juancasterba.taskflow_api.model.Task;
 import com.juancasterba.taskflow_api.repository.ProjectRepository;
 import com.juancasterba.taskflow_api.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

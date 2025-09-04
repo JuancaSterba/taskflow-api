@@ -67,9 +67,9 @@ public class ProjectServiceImpl implements ProjectService{
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
 
-        // Verificación de propiedad
-        if (!project.getOwner().getId().equals(currentUser.getId())) {
-            // Lanzamos 404 para no revelar la existencia de recursos ajenos
+        // Verificación de propiedad (ADMIN puede ver todo)
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        if (!isAdmin && !project.getOwner().getId().equals(currentUser.getId())) {
             throw new ResourceNotFoundException("Project not found with id: " + id);
         }
 
@@ -106,7 +106,6 @@ public class ProjectServiceImpl implements ProjectService{
             throw new ResourceNotFoundException("Project not found with id: " + id);
         }
 
-        // ¡Implementamos el borrado lógico!
         project.setStatus(Status.ARCHIVED);
         projectRepository.save(project);
     }
