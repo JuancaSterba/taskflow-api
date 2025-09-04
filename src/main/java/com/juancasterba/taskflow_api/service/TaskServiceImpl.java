@@ -19,21 +19,22 @@ public class TaskServiceImpl implements TaskService{
 
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectMapper projectMapper;
 
     @Override
     public TaskResponseDTO createTask(CreateTaskRequestDTO taskDTO) {
-        Task task = ProjectMapper.toTaskEntity(taskDTO);
-        return ProjectMapper.toTaskDTO(taskRepository.save(task));
+        Task task = projectMapper.toTaskEntity(taskDTO);
+        return projectMapper.toTaskDTO(taskRepository.save(task));
     }
 
     @Override
     public List<TaskResponseDTO> getAllTasks() {
-        return taskRepository.findAll().stream().map(ProjectMapper::toTaskDTO).toList();
+        return taskRepository.findAll().stream().map(projectMapper::toTaskDTO).toList();
     }
 
     @Override
     public TaskResponseDTO getTaskById(Long id) throws ResourceNotFoundException {
-        return ProjectMapper.toTaskDTO(taskRepository.findById(id).orElseThrow(
+        return projectMapper.toTaskDTO(taskRepository.findById(id).orElseThrow(
                 ()->new ResourceNotFoundException("No task found"))
         );
     }
@@ -46,7 +47,7 @@ public class TaskServiceImpl implements TaskService{
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setCompleted(taskDTO.isCompleted());
-        return ProjectMapper.toTaskDTO(taskRepository.save(task));
+        return projectMapper.toTaskDTO(taskRepository.save(task));
     }
 
     @Override
@@ -61,9 +62,9 @@ public class TaskServiceImpl implements TaskService{
     public TaskResponseDTO createTaskForProject(Long projectId, CreateTaskRequestDTO taskDTO) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(()->new ResourceNotFoundException("No project found with id" + projectId));
-        Task task = ProjectMapper.toTaskEntity(taskDTO);
+        Task task = projectMapper.toTaskEntity(taskDTO);
         task.setProject(project);
-        return ProjectMapper.toTaskDTO(taskRepository.save(task));
+        return projectMapper.toTaskDTO(taskRepository.save(task));
     }
 
 }

@@ -243,4 +243,5 @@ public class ProjectController {
         TaskResponseDTO createdTask = taskService.createTaskForProject(projectId, taskDTO);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
+
 }
