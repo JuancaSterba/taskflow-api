@@ -24,6 +24,7 @@ public class ProjectResponseDTO {
     @Schema(description = "Detailed description of the project", example = "Development of the new online sales platform for the company.")
     private String description;
 
+    @Schema(description = "Username of the project owner", example = "john.doe")
     private String ownerUsername;
 
     @Schema(description = "List of tasks associated with the project")
