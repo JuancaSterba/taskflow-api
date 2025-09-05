@@ -35,3 +35,4 @@ build/
 # Secrets and environment-specific configuration
 .env
 application-dev.properties
+/src/main/resources/application-dev.yml

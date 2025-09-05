@@ -1,0 +1,30 @@
+# Activa el perfil de desarrollo. Spring ahora leer este archivo Y application-dev.yml
+spring:
+  profiles:
+    active: dev
+  # Propiedades generales que no son secretas
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  #spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgresSQLDialect
+  output:
+    ansi:
+      enabled: always # Esta propiedad permite ver el log en colores
+
+# Establece el nivel de log a DEBUG para ver más detalles en el framework web y de seguridad
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG
+
+# Esta propiedad es muy útil: fuerza a que el stack trace del error se muestre siempre
+server:
+  error:
+    include-stacktrace: always

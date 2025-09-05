@@ -1,0 +1,12 @@
+# Configuración de la Base de Datos
+# Copia este archivo a 'application-dev.yml' y rellena los valores.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskflow
+    username:
+    password:
+
+# Secreto de JWT
+jwt:
+  secret:
+    key:
