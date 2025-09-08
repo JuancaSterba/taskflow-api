@@ -14,6 +14,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Service
@@ -33,6 +34,7 @@ public class JwtServiceImpl implements JwtService {
 
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role", Objects.requireNonNull(userDetails.getAuthorities().stream().findFirst().orElse(null)).getAuthority())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(10, ChronoUnit.HOURS)))
                 .signWith(getSigningKey())
