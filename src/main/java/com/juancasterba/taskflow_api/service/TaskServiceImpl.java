@@ -88,18 +88,10 @@ public class TaskServiceImpl implements TaskService{
                 project.getOwner().getUsername(),
                 project.getOwner().getEmail()
         );
+
+        // ¡Y confirma que estás enviando el objeto 'event'!
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send("tasks-events", event);
-        future.whenComplete((result, ex) -> {
-            if (ex == null) {
-                // Éxito
-                log.info("✅ Evento enviado exitosamente a Kafka. Evento=[{}], Offset=[{}]",
-                        event,
-                        result.getRecordMetadata().offset());
-            } else {
-                // Falla
-                log.error("❌ Error al enviar evento a Kafka. Evento=[{}]", event, ex);
-            }
-        });
+
         return projectMapper.toTaskDTO(savedTask);
     }
 
