@@ -9,9 +9,15 @@ API RESTful para la gestión de proyectos y tareas, construida con Spring Boot. 
 * **Seguridad:** Spring Security 6, JSON Web Tokens (JWT)
 * **Persistencia:** Spring Data JPA / Hibernate
 * **Base de Datos:** PostgreSQL (gestionada con Docker)
-* **Pruebas:** JUnit 5, Mockito, Testcontainers
-* **Documentación API:** Springdoc (OpenAPI 3)
+* **Pruebas:** JUnit 5, Mockito, Testc
+* * 
 * **Gestión de Dependencias:** Maven
+
+## Arquitectura
+
+Esta API funciona como el servicio central de un ecosistema de microservicios. Implementa una **arquitectura orientada a eventos** para comunicarse con otros servicios de forma desacoplada.
+
+* **Productor de Eventos:** Publica eventos en un topic de Kafka (ej: `tasks-events`) cuando ocurren acciones importantes como la creación de una tarea.
 
 ## Documentación de la API (Interactiva)
 
