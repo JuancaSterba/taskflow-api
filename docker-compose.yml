@@ -34,5 +34,19 @@ services:
     volumes:
       - taskflow-db-data:/var/lib/postgresql/data
 
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui-taskflow
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "8082:8080" # Mapeamos el puerto 8080 del contenedor al 8082 de tu máquina
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-taskflow-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092 # La dirección de Kafka DENTRO de la red de Docker
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      DYNAMIC_CONFIG_ENABLED: 'true'
+
 volumes:
   taskflow-db-data:
