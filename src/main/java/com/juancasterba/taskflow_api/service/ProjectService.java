@@ -18,5 +18,6 @@ public interface ProjectService {
 
     // ADMIN only methods
     void hardDeleteProject(Long id);
+    Page<ProjectResponseDTO> findAllProjectsForAdmin(Pageable pageable);
 
 }

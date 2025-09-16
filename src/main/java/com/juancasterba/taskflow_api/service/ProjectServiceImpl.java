@@ -9,7 +9,9 @@ import com.juancasterba.taskflow_api.model.Status;
 import com.juancasterba.taskflow_api.repository.ProjectRepository;
 import com.juancasterba.taskflow_api.security.model.User;
 import com.juancasterba.taskflow_api.security.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +29,7 @@ public class ProjectServiceImpl implements ProjectService{
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -41,23 +44,9 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     @Transactional(readOnly = true)
     public Page<ProjectResponseDTO> getAllProjects(Pageable pageable) {
-        // Primero, obtenemos el objeto de autenticación completo para poder ver los roles
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Verificamos si el usuario actual tiene el rol de ADMIN
-        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            // --- LÓGICA DEL ADMIN ---
-            // Si es admin, llamamos a findAll() para traer todos los proyectos.
-            // La anotación @SQLRestriction seguirá filtrando los 'ACTIVE' por defecto.
-            Page<Project> projectPage = projectRepository.findAll(pageable);
-            return projectPage.map(projectMapper::toProjectDTO);
-        } else {
-            // --- LÓGICA DEL USER ---
-            // Si no es admin, usamos nuestro método seguro para obtener solo sus proyectos.
-            User currentUser = getCurrentAuthenticatedUser();
-            Page<Project> projectPage = projectRepository.findByOwner(currentUser, pageable);
-            return projectPage.map(projectMapper::toProjectDTO);
-        }
+        User currentUser = getCurrentAuthenticatedUser();
+        Page<Project> projectPage = projectRepository.findByOwner(currentUser, pageable);
+        return projectPage.map(projectMapper::toProjectDTO);
     }
 
     @Override
@@ -124,6 +113,16 @@ public class ProjectServiceImpl implements ProjectService{
             throw new ResourceNotFoundException("Project not found with id: " + id);
         }
         projectRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<ProjectResponseDTO> findAllProjectsForAdmin(Pageable pageable) {
+        Session session= entityManager.unwrap(Session.class);
+        session.disableFilter("activeStatusFilter");
+        Page<Project> projectPage = projectRepository.findAll(pageable);
+        return projectPage.map(projectMapper::toProjectDTO);
     }
 
 }
