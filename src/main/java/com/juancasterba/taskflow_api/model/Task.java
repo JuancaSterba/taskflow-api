@@ -7,11 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "tasks")
-@SQLRestriction("status = 'ACTIVE'")
+@org.hibernate.annotations.Filter(name = "activeStatusFilter")
 @Getter
 @Setter
 @AllArgsConstructor

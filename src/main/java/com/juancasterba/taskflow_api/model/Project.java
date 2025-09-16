@@ -8,14 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "projects")
-@SQLRestriction("status = 'ACTIVE'")
+@org.hibernate.annotations.Filter(name = "activeStatusFilter")
 @Getter
 @Setter
 @AllArgsConstructor

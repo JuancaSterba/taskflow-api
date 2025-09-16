@@ -1,4 +1,4 @@
-package com.juancasterba.taskflow_api.config;
+package com.juancasterba.taskflow_api.security.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
