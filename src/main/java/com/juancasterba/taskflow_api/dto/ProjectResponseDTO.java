@@ -30,4 +30,7 @@ public class ProjectResponseDTO {
     @Schema(description = "List of tasks associated with the project")
     private List<TaskResponseDTO> tasks;
 
+    @Schema(description = "Status of the task", example = "ACTIVE")
+    private String status;
+
 }

@@ -18,6 +18,7 @@ public class HibernateFilterAspect {
     // en CUALQUIER clase dentro de tus paquetes de servicio.
     @Before("execution(public * com.juancasterba.taskflow_api.service..*.*(..))")
     public void enableActiveStatusFilter() {
+        // Obtenemos la sesión actual y encendemos el filtro.
         Session session = entityManager.unwrap(Session.class);
         session.enableFilter("activeStatusFilter");
     }
