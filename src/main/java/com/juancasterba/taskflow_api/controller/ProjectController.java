@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
 @Tag(name = "Projects", description = "Endpoints for managing projects.")
+@SecurityRequirement(name = "bearerAuth")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -167,7 +169,7 @@ public class ProjectController {
             )
     })
     public ResponseEntity<?> deleteProjectById(@PathVariable Long id){
-        projectService.deleteProject(id);
+        projectService.archiveProject(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -206,4 +208,36 @@ public class ProjectController {
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
+    @GetMapping("/{projectId}/tasks")
+    @Operation(
+            summary = "Get all tasks for a specific project",
+            description = "Retrieves a paginated list of tasks associated with a specific project ID. Access is restricted to the project owner or an admin."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "List of tasks obtained successfully.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Page.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized. The authentication token is invalid or has not been provided.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Not found. The project with the specified ID does not exist or you do not have permission to view it.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))
+            )
+    })
+    public ResponseEntity<Page<TaskResponseDTO>> getTasksByProjectId(
+            @PathVariable Long projectId,
+            Pageable pageable) {
+
+        Page<TaskResponseDTO> tasksPage = taskService.getTasksByProjectId(projectId, pageable);
+        return ResponseEntity.ok(tasksPage);
+    }
 }

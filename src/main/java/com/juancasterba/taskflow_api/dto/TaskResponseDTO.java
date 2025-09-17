@@ -25,4 +25,7 @@ public class TaskResponseDTO {
     @Schema(description = "Indicates whether the task is completed or not", example = "false")
     private boolean completed;
 
+    @Schema(description = "Status of the task", example = "ACTIVE")
+    private String status;
+
 }
